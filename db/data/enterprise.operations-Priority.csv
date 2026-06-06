@@ -1,0 +1,5 @@
+ID,Code,Name,Description
+11111111-cccc-1111-cccc-111111111111,LOW,Low,Low priority
+22222222-cccc-2222-cccc-222222222222,MEDIUM,Medium,Medium priority
+33333333-cccc-3333-cccc-333333333333,HIGH,High,High priority
+44444444-cccc-4444-cccc-444444444444,CRITICAL,Critical,Critical priority

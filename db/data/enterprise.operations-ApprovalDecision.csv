@@ -1,0 +1,5 @@
+ID,Code,Name,Description
+11111111-dddd-1111-dddd-111111111111,APPROVED,Approved,Approval granted
+22222222-dddd-2222-dddd-222222222222,REJECTED,Rejected,Approval denied
+33333333-dddd-3333-dddd-333333333333,RETURNED,Returned,Returned for clarification
+44444444-dddd-4444-dddd-444444444444,PENDING,Pending,Waiting for action

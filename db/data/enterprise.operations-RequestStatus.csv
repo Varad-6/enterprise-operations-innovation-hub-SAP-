@@ -1,0 +1,5 @@
+ID,Code,Name,Description
+11111111-bbbb-1111-bbbb-111111111111,DRAFT,Draft,Initial draft state
+22222222-bbbb-2222-bbbb-222222222222,SUBMITTED,Submitted,Submitted for approval
+33333333-bbbb-3333-bbbb-333333333333,APPROVED,Approved,Request approved
+44444444-bbbb-4444-bbbb-444444444444,REJECTED,Rejected,Request rejected
