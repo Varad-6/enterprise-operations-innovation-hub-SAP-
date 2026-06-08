@@ -1,5 +1,5 @@
-ID,EmployeeCode,FirstName,LastName,Email,IsActive
-11111111-eeee-1111-eeee-111111111111,EMP001,Varad,Kadam,varad@company.com,true
-22222222-eeee-2222-eeee-222222222222,EMP002,Rahul,Sharma,rahul@company.com,true
-33333333-eeee-3333-eeee-333333333333,EMP003,Priya,Patil,priya@company.com,true
-44444444-eeee-4444-eeee-444444444444,EMP004,Amit,Joshi,amit@company.com,true
+ID,EmployeeCode,FirstName,LastName,Email,IsActive,Department_ID,Manager_ID
+11111111-eeee-1111-eeee-111111111111,EMP001,Varad,Kadam,varad@company.com,true,11111111-1111-1111-1111-111111111111,22222222-eeee-2222-eeee-222222222222
+22222222-eeee-2222-eeee-222222222222,EMP002,Rahul,Sharma,rahul@company.com,true,11111111-1111-1111-1111-111111111111,33333333-eeee-3333-eeee-333333333333
+33333333-eeee-3333-eeee-333333333333,EMP003,Priya,Patil,priya@company.com,true,11111111-1111-1111-1111-111111111111,
+44444444-eeee-4444-eeee-444444444444,EMP004,Amit,Joshi,amit@company.com,true,44444444-4444-4444-4444-444444444444,22222222-eeee-2222-eeee-222222222222

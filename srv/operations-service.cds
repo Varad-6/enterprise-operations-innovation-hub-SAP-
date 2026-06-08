@@ -22,4 +22,6 @@ service OperationsService {
 
     entity Documents          as projection on db.Document;
 
+    action submitRequest(requestID : UUID) returns String;
+
 }

@@ -2,7 +2,8 @@
   "name": "Enterprise-Operations-Innovation-Hub",
   "version": "1.0.0",
   "dependencies": {
-    "@sap/cds": "^9"
+    "@sap/cds": "^9",
+    "axios": "^1.17.0"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4"
