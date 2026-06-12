@@ -9,7 +9,7 @@ module.exports = cds.service.impl(async function () {
         Approvals
     } = this.entities;
 
-    // Default Status = DRAFT
+    // Set DRAFT status when Request is created
     this.before('CREATE', 'Requests', async (req) => {
 
         const draftStatus = await SELECT.one
@@ -22,7 +22,7 @@ module.exports = cds.service.impl(async function () {
 
     });
 
-    // Auto Create Approval based on Manager
+    // Auto-create Approval based on Employee Manager
     this.after('CREATE', 'Requests', async (data) => {
 
         if (!data.Employee_ID) {
@@ -33,11 +33,7 @@ module.exports = cds.service.impl(async function () {
             .from(Employees)
             .where({ ID: data.Employee_ID });
 
-        if (!employee) {
-            return;
-        }
-
-        if (!employee.Manager_ID) {
+        if (!employee || !employee.Manager_ID) {
             return;
         }
 
@@ -49,7 +45,7 @@ module.exports = cds.service.impl(async function () {
 
     });
 
-    // Submit Request Action
+    // Submit Request
     this.on('submitRequest', async (req) => {
 
         const requestId = req.data.requestID;
@@ -96,8 +92,93 @@ module.exports = cds.service.impl(async function () {
                 ID: requestId
             });
 
+        return `Request submitted successfully : ${requestNumber}`;
+
+    });
+
+    // Approve Request
+    this.on('approveRequest', async (req) => {
+
+        const approvedStatus = await SELECT.one
+            .from(RequestStatuses)
+            .where({ Code: 'APPROVED' });
+
+        if (!approvedStatus) {
+            return req.error(400, 'APPROVED status not configured');
+        }
+
+        await UPDATE(Requests)
+            .set({
+                Status_ID: approvedStatus.ID
+            })
+            .where({
+                ID: req.data.requestID
+            });
+
+        return 'Request Approved';
+
+    });
+
+    // Reject Request
+    this.on('rejectRequest', async (req) => {
+
+        const rejectedStatus = await SELECT.one
+            .from(RequestStatuses)
+            .where({ Code: 'REJECTED' });
+
+        if (!rejectedStatus) {
+            return req.error(400, 'REJECTED status not configured');
+        }
+
+        await UPDATE(Requests)
+            .set({
+                Status_ID: rejectedStatus.ID
+            })
+            .where({
+                ID: req.data.requestID
+            });
+
+        return 'Request Rejected';
+
+    });
+
+    // Dashboard Statistics
+    this.on('getDashboardStats', async () => {
+
+        const allRequests = await SELECT.from(Requests);
+
+        const approvedStatus = await SELECT.one
+            .from(RequestStatuses)
+            .where({ Code: 'APPROVED' });
+
+        const rejectedStatus = await SELECT.one
+            .from(RequestStatuses)
+            .where({ Code: 'REJECTED' });
+
+        const submittedStatus = await SELECT.one
+            .from(RequestStatuses)
+            .where({ Code: 'SUBMITTED' });
+
+        const approved = approvedStatus
+            ? await SELECT.from(Requests)
+                .where({ Status_ID: approvedStatus.ID })
+            : [];
+
+        const rejected = rejectedStatus
+            ? await SELECT.from(Requests)
+                .where({ Status_ID: rejectedStatus.ID })
+            : [];
+
+        const pending = submittedStatus
+            ? await SELECT.from(Requests)
+                .where({ Status_ID: submittedStatus.ID })
+            : [];
+
         return {
-            message: `Request submitted successfully : ${requestNumber}`
+            TotalRequests: allRequests.length,
+            PendingRequests: pending.length,
+            ApprovedRequests: approved.length,
+            RejectedRequests: rejected.length
         };
 
     });

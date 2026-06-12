@@ -6,10 +6,20 @@
     "axios": "^1.17.0"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^2.4"
+    "@cap-js/sqlite": "^2.4",
+    "cds-plugin-ui5": "^0.13.0"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "watch-enterprise-operations-ui": "cds watch --open enterprise.operations.enterpriseoperationsui/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
-  "private": true
+  "private": true,
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/enterprise-operations-ui",
+    "app/enterprise-operations-ui",
+    "app/enterprise-operations-ui"
+  ]
 }
