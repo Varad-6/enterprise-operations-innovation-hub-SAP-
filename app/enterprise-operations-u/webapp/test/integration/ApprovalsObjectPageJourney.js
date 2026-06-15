@@ -22,29 +22,25 @@ sap.ui.define([
     "use strict";
 
     function journey() {
-        QUnit.module("RequestsListListReport journey");
+        QUnit.module("ApprovalsObjectPageObjectPage journey");
 
-        opaTest("Start application", function (Given, When, Then) {
+        opaTest("Navigate to ApprovalsObjectPageObjectPage", function (Given, When, Then) {
             Given.iStartMyApp();
 
-            Then.onTheRequestsList.iSeeThisPage();
-        });
-
-
-
-
-
-        opaTest("Navigate to ObjectPage", function (Given, When, Then) {
-            // Note: this test will fail if the ListReport page doesn't show any data
-            
             When.onTheRequestsList.onFilterBar().iExecuteSearch();
-            
+
             Then.onTheRequestsList.onTable().iCheckRows();
-
             When.onTheRequestsList.onTable().iPressRow(0);
-            Then.onTheRequestsObjectPage.iSeeThisPage();
 
+            Then.onTheRequestsObjectPage.iSeeThisPage();
+            Then.onTheRequestsObjectPage.onTable({ property: "Approvals" }).iCheckRows();
+            When.onTheRequestsObjectPage.onTable({ property: "Approvals" }).iPressRow(0);
+
+            Then.onTheApprovalsObjectPage.iSeeThisPage();
         });
+
+
+
 
         opaTest("Teardown", function (Given, When, Then) { 
             // Cleanup

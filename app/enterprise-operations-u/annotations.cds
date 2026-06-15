@@ -1,5 +1,4 @@
 using OperationsService as service from '../../srv/operations-service';
-
 annotate service.Requests with @(
     UI.FieldGroup #GeneratedGroup : {
         $Type : 'UI.FieldGroupType',
@@ -156,6 +155,3 @@ annotate service.Requests with {
     }
 };
 
-annotate service.Requests with @(
-    UI.CreateHidden : false
-);

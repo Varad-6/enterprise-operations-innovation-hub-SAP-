@@ -6,10 +6,13 @@ module.exports = cds.service.impl(async function () {
         Requests,
         RequestStatuses,
         Employees,
-        Approvals
+        Approvals,
+        ApprovalDecisions
     } = this.entities;
 
-    // Set DRAFT status when Request is created
+    // =====================================================
+    // BEFORE CREATE
+    // =====================================================
     this.before('CREATE', 'Requests', async (req) => {
 
         const draftStatus = await SELECT.one
@@ -20,9 +23,28 @@ module.exports = cds.service.impl(async function () {
             req.data.Status_ID = draftStatus.ID;
         }
 
+        if (!req.data.Title || req.data.Title.trim() === '') {
+            return req.error(400, 'Title is mandatory');
+        }
+
+        if (!req.data.Description || req.data.Description.trim() === '') {
+            return req.error(400, 'Description is mandatory');
+        }
+
+        // Generate Request Number
+
+        const year = new Date().getFullYear();
+
+        const requestCount = await SELECT.from(Requests);
+
+        req.data.RequestNumber =
+            `REQ-${year}-${String(requestCount.length + 1).padStart(4, '0')}`;
+
     });
 
-    // Auto-create Approval based on Employee Manager
+    // =====================================================
+    // AFTER CREATE
+    // =====================================================
     this.after('CREATE', 'Requests', async (data) => {
 
         if (!data.Employee_ID) {
@@ -37,16 +59,99 @@ module.exports = cds.service.impl(async function () {
             return;
         }
 
+        const pendingDecision = await SELECT.one
+            .from(ApprovalDecisions)
+            .where({ Code: 'PENDING' });
+
         await INSERT.into(Approvals).entries({
             ID: cds.utils.uuid(),
             Request_ID: data.ID,
-            Approver_ID: employee.Manager_ID
+            Approver_ID: employee.Manager_ID,
+            Decision_ID: pendingDecision ? pendingDecision.ID : null
         });
+
+        console.log(
+            `Approval created for Request ${data.ID}`
+        );
 
     });
 
-    // Submit Request
+    // =====================================================
+    // BEFORE UPDATE
+    // =====================================================
+    this.before('UPDATE', 'Requests', async (req) => {
+
+        const existingRequest = await SELECT.one
+            .from(Requests)
+            .where({ ID: req.data.ID });
+
+        if (!existingRequest) {
+            return req.error(404, 'Request not found');
+        }
+
+        const status = await SELECT.one
+            .from(RequestStatuses)
+            .where({ ID: existingRequest.Status_ID });
+
+        if (
+            status &&
+            (
+                status.Code === 'APPROVED' ||
+                status.Code === 'REJECTED'
+            )
+        ) {
+            return req.error(
+                400,
+                'Approved or Rejected requests cannot be modified'
+            );
+        }
+
+        if (
+            req.data.Title !== undefined &&
+            req.data.Title.trim() === ''
+        ) {
+            return req.error(
+                400,
+                'Title cannot be empty'
+            );
+        }
+
+        if (
+            req.data.Description !== undefined &&
+            req.data.Description.trim() === ''
+        ) {
+            return req.error(
+                400,
+                'Description cannot be empty'
+            );
+        }
+
+    });
+
+    // =====================================================
+    // AFTER UPDATE
+    // =====================================================
+    this.after('UPDATE', 'Requests', async (data) => {
+
+        console.log(`Request Updated : ${data.ID}`);
+
+    });
+
+    // =====================================================
+    // SUBMIT REQUEST
+    // =====================================================
     this.on('submitRequest', async (req) => {
+
+        if (
+            !req.user.is('Employee') &&
+            !req.user.is('Manager') &&
+            !req.user.is('Admin')
+        ) {
+            return req.error(
+                403,
+                'Not authorized to submit requests'
+            );
+        }
 
         const requestId = req.data.requestID;
 
@@ -71,41 +176,46 @@ module.exports = cds.service.impl(async function () {
             .where({ Code: 'SUBMITTED' });
 
         if (!submittedStatus) {
-            return req.error(400, 'SUBMITTED status not configured');
+            return req.error(
+                400,
+                'SUBMITTED status not configured'
+            );
         }
-
-        const year = new Date().getFullYear();
-
-        const allRequests = await SELECT.from(Requests);
-
-        const nextNumber = allRequests.length + 1;
-
-        const requestNumber =
-            `REQ-${year}-${String(nextNumber).padStart(4, '0')}`;
 
         await UPDATE(Requests)
             .set({
-                RequestNumber: requestNumber,
                 Status_ID: submittedStatus.ID
             })
             .where({
                 ID: requestId
             });
 
-        return `Request submitted successfully : ${requestNumber}`;
+        return `Request submitted successfully : ${requestData.RequestNumber}`;
 
     });
 
-    // Approve Request
+    // =====================================================
+    // APPROVE REQUEST
+    // =====================================================
     this.on('approveRequest', async (req) => {
 
         const approvedStatus = await SELECT.one
             .from(RequestStatuses)
             .where({ Code: 'APPROVED' });
 
-        if (!approvedStatus) {
-            return req.error(400, 'APPROVED status not configured');
-        }
+        const approvedDecision = await SELECT.one
+            .from(ApprovalDecisions)
+            .where({ Code: 'APPROVED' });
+
+        await UPDATE(Approvals)
+            .set({
+                Decision_ID: approvedDecision.ID,
+                Comments: req.data.comments,
+                ApprovedAt: new Date()
+            })
+            .where({
+                Request_ID: req.data.requestID
+            });
 
         await UPDATE(Requests)
             .set({
@@ -119,16 +229,28 @@ module.exports = cds.service.impl(async function () {
 
     });
 
-    // Reject Request
+    // =====================================================
+    // REJECT REQUEST
+    // =====================================================
     this.on('rejectRequest', async (req) => {
 
         const rejectedStatus = await SELECT.one
             .from(RequestStatuses)
             .where({ Code: 'REJECTED' });
 
-        if (!rejectedStatus) {
-            return req.error(400, 'REJECTED status not configured');
-        }
+        const rejectedDecision = await SELECT.one
+            .from(ApprovalDecisions)
+            .where({ Code: 'REJECTED' });
+
+        await UPDATE(Approvals)
+            .set({
+                Decision_ID: rejectedDecision.ID,
+                Comments: req.data.comments,
+                ApprovedAt: new Date()
+            })
+            .where({
+                Request_ID: req.data.requestID
+            });
 
         await UPDATE(Requests)
             .set({
@@ -142,8 +264,19 @@ module.exports = cds.service.impl(async function () {
 
     });
 
-    // Dashboard Statistics
-    this.on('getDashboardStats', async () => {
+    // =====================================================
+    // DASHBOARD STATS
+    // =====================================================
+    this.on('getDashboardStats', async (req) => {
+
+        /*
+        if (!req.user.is('Admin')) {
+            return req.error(
+                403,
+                'Only Admin can access dashboard statistics'
+            );
+        }
+        */
 
         const allRequests = await SELECT.from(Requests);
 

@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "@sap/cds": "^9",
+    "@sap/xsenv": "^6.2.1",
+    "@sap/xssec": "^4.13.0",
     "axios": "^1.17.0"
   },
   "devDependencies": {
@@ -11,7 +13,8 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-enterprise-operations-ui": "cds watch --open enterprise.operations.enterpriseoperationsui/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-enterprise-operations-ui": "cds watch --open enterprise.operations.enterpriseoperationsui/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-enterprise-operations-u": "cds watch --open enterprise.operations.enterpriseoperationsu/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "workspaces": [
@@ -19,7 +22,13 @@
   ],
   "sapux": [
     "app/enterprise-operations-ui",
-    "app/enterprise-operations-ui",
-    "app/enterprise-operations-ui"
-  ]
+    "app/enterprise-operations-u"
+  ],
+  "cds": {
+    "requires": {
+      "destinations": true,
+      "html5-repo": true,
+      "workzone": true
+    }
+  }
 }

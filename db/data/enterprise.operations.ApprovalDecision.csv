@@ -1,0 +1,4 @@
+ID,Code,Name,Description
+11111111-aaaa-1111-aaaa-111111111111,PENDING,Pending,Waiting for approval
+22222222-aaaa-2222-aaaa-222222222222,APPROVED,Approved,Request approved
+33333333-aaaa-3333-aaaa-333333333333,REJECTED,Rejected,Request rejected

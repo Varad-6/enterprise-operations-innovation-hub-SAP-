@@ -1,20 +1,20 @@
 {
   "generationParameters": {
-    "generationDate": "Fri Jun 12 2026 12:14:16 GMT+0530 (India Standard Time)",
+    "generationDate": "Mon Jun 15 2026 15:48:01 GMT+0530 (India Standard Time)",
     "generatorPlatform": "CLI",
     "serviceType": "Local CAP",
     "metadataFilename": "",
     "serviceUrl": "http://localhost:4004/odata/v4/operations/",
-    "appName": "enterprise-operations-ui",
+    "appName": "enterprise-operations-u",
     "appTitle": "Enterprise Operations Hub",
-    "appDescription": "Enterprise Operations Request Management Application",
+    "appDescription": "Enterprise Operations Request Management System",
     "appNamespace": "enterprise.operations",
     "ui5Theme": "sap_horizon",
     "ui5Version": "1.148.1",
     "enableEslint": true,
     "enableTypeScript": false,
     "showMockDataInfo": false,
-    "generatorVersion": "1.25.0",
+    "generatorVersion": "1.26.0",
     "template": "List Report Page V4",
     "generatorName": "SAP Fiori Application Generator",
     "entityRelatedConfig": [
@@ -24,9 +24,9 @@
       },
       {
         "type": "Navigation Entity",
-        "value": "None"
+        "value": "Approvals"
       }
     ],
-    "launchText": "To launch the generated app, start your CAP project:  and navigate to the following location in your browser:\n\nhttp://localhost:4004/enterprise.operations.enterpriseoperationsui/index.html"
+    "launchText": "To launch the generated app, start your CAP project:  and navigate to the following location in your browser:\n\nhttp://localhost:4004/enterprise.operations.enterpriseoperationsu/index.html"
   }
 }

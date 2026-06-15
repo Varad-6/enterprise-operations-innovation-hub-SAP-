@@ -1,7 +1,7 @@
 {
-  "name": "enterprise-operations-ui",
+  "name": "enterprise-operations-u",
   "version": "0.0.1",
-  "description": "Enterprise Operations Request Management Application",
+  "description": "Enterprise Operations Request Management System",
   "keywords": [
     "ui5",
     "openui5",
