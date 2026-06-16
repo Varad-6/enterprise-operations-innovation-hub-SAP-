@@ -452,7 +452,23 @@
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
       </Annotations>
       <Annotations Target="OperationsService.Requests">
-        <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="Request Number"/>
+              <PropertyValue Property="Value" Path="RequestNumber"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="Title"/>
+              <PropertyValue Property="Value" Path="Title"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="Description"/>
+              <PropertyValue Property="Value" Path="Description"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.FieldGroup" Qualifier="GeneralInformation">
           <Record Type="UI.FieldGroupType">
             <PropertyValue Property="Data">
               <Collection>
@@ -475,25 +491,9 @@
         <Annotation Term="UI.Facets">
           <Collection>
             <Record Type="UI.ReferenceFacet">
-              <PropertyValue Property="ID" String="GeneratedFacet1"/>
-              <PropertyValue Property="Label" String="General Information"/>
-              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneratedGroup"/>
-            </Record>
-          </Collection>
-        </Annotation>
-        <Annotation Term="UI.LineItem">
-          <Collection>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Request Number"/>
-              <PropertyValue Property="Value" Path="RequestNumber"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Title"/>
-              <PropertyValue Property="Value" Path="Title"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Description"/>
-              <PropertyValue Property="Value" Path="Description"/>
+              <PropertyValue Property="ID" String="GeneralInformation"/>
+              <PropertyValue Property="Label" String="Request Information"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneralInformation"/>
             </Record>
           </Collection>
         </Annotation>
@@ -537,168 +537,6 @@
       </Annotations>
       <Annotations Target="OperationsService.Requests/ID">
         <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
-      </Annotations>
-      <Annotations Target="OperationsService.Requests/Employee_ID">
-        <Annotation Term="Common.ValueList">
-          <Record Type="Common.ValueListType">
-            <PropertyValue Property="CollectionPath" String="Employees"/>
-            <PropertyValue Property="Parameters">
-              <Collection>
-                <Record Type="Common.ValueListParameterInOut">
-                  <PropertyValue Property="LocalDataProperty" PropertyPath="Employee_ID"/>
-                  <PropertyValue Property="ValueListProperty" String="ID"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="EmployeeCode"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="FirstName"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="LastName"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Email"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <Annotations Target="OperationsService.Requests/RequestType_ID">
-        <Annotation Term="Common.ValueList">
-          <Record Type="Common.ValueListType">
-            <PropertyValue Property="CollectionPath" String="RequestTypes"/>
-            <PropertyValue Property="Parameters">
-              <Collection>
-                <Record Type="Common.ValueListParameterInOut">
-                  <PropertyValue Property="LocalDataProperty" PropertyPath="RequestType_ID"/>
-                  <PropertyValue Property="ValueListProperty" String="ID"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Code"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Name"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Description"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <Annotations Target="OperationsService.Requests/Status_ID">
-        <Annotation Term="Common.ValueList">
-          <Record Type="Common.ValueListType">
-            <PropertyValue Property="CollectionPath" String="RequestStatuses"/>
-            <PropertyValue Property="Parameters">
-              <Collection>
-                <Record Type="Common.ValueListParameterInOut">
-                  <PropertyValue Property="LocalDataProperty" PropertyPath="Status_ID"/>
-                  <PropertyValue Property="ValueListProperty" String="ID"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Code"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Name"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Description"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <Annotations Target="OperationsService.Requests/Priority_ID">
-        <Annotation Term="Common.ValueList">
-          <Record Type="Common.ValueListType">
-            <PropertyValue Property="CollectionPath" String="Priorities"/>
-            <PropertyValue Property="Parameters">
-              <Collection>
-                <Record Type="Common.ValueListParameterInOut">
-                  <PropertyValue Property="LocalDataProperty" PropertyPath="Priority_ID"/>
-                  <PropertyValue Property="ValueListProperty" String="ID"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Code"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Name"/>
-                </Record>
-                <Record Type="Common.ValueListParameterDisplayOnly">
-                  <PropertyValue Property="ValueListProperty" String="Description"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-      </Annotations>
-      <Annotations Target="OperationsService.Approvals">
-        <Annotation Term="UI.FieldGroup" Qualifier="ApprovalGroup">
-          <Record Type="UI.FieldGroupType">
-            <PropertyValue Property="Data">
-              <Collection>
-                <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="Request ID"/>
-                  <PropertyValue Property="Value" Path="Request_ID"/>
-                </Record>
-                <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="Approver ID"/>
-                  <PropertyValue Property="Value" Path="Approver_ID"/>
-                </Record>
-                <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="Decision ID"/>
-                  <PropertyValue Property="Value" Path="Decision_ID"/>
-                </Record>
-                <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="Comments"/>
-                  <PropertyValue Property="Value" Path="Comments"/>
-                </Record>
-                <Record Type="UI.DataField">
-                  <PropertyValue Property="Label" String="Approved At"/>
-                  <PropertyValue Property="Value" Path="ApprovedAt"/>
-                </Record>
-              </Collection>
-            </PropertyValue>
-          </Record>
-        </Annotation>
-        <Annotation Term="UI.Facets">
-          <Collection>
-            <Record Type="UI.ReferenceFacet">
-              <PropertyValue Property="ID" String="ApprovalFacet"/>
-              <PropertyValue Property="Label" String="Approval Information"/>
-              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#ApprovalGroup"/>
-            </Record>
-          </Collection>
-        </Annotation>
-        <Annotation Term="UI.LineItem">
-          <Collection>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Request ID"/>
-              <PropertyValue Property="Value" Path="Request_ID"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Approver ID"/>
-              <PropertyValue Property="Value" Path="Approver_ID"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Decision ID"/>
-              <PropertyValue Property="Value" Path="Decision_ID"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Comments"/>
-              <PropertyValue Property="Value" Path="Comments"/>
-            </Record>
-            <Record Type="UI.DataField">
-              <PropertyValue Property="Label" String="Approved At"/>
-              <PropertyValue Property="Value" Path="ApprovedAt"/>
-            </Record>
-          </Collection>
-        </Annotation>
       </Annotations>
       <Annotations Target="OperationsService.Approvals/createdAt">
         <Annotation Term="UI.HiddenFilter" Bool="true"/>

@@ -5,7 +5,8 @@
     "@sap/cds": "^9",
     "@sap/xsenv": "^6.2.1",
     "@sap/xssec": "^4.13.0",
-    "axios": "^1.17.0"
+    "axios": "^1.17.0",
+    "better-sqlite3": "^12.10.1"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4",

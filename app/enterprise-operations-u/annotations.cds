@@ -1,157 +1,101 @@
 using OperationsService as service from '../../srv/operations-service';
+
 annotate service.Requests with @(
-    UI.FieldGroup #GeneratedGroup : {
-        $Type : 'UI.FieldGroupType',
-        Data : [
-            {
-                $Type : 'UI.DataField',
-                Label : 'RequestNumber',
-                Value : RequestNumber,
-            },
-            {
-                $Type : 'UI.DataField',
-                Label : 'Title',
-                Value : Title,
-            },
-            {
-                $Type : 'UI.DataField',
-                Label : 'Description',
-                Value : Description,
-            },
-        ],
+
+
+UI.LineItem : [
+    {
+        $Type : 'UI.DataField',
+        Label : 'Request Number',
+        Value : RequestNumber
     },
-    UI.Facets : [
-        {
-            $Type : 'UI.ReferenceFacet',
-            ID : 'GeneratedFacet1',
-            Label : 'General Information',
-            Target : '@UI.FieldGroup#GeneratedGroup',
-        },
-    ],
-    UI.LineItem : [
-        {
-            $Type : 'UI.DataField',
-            Label : 'RequestNumber',
-            Value : RequestNumber,
-        },
-        {
-            $Type : 'UI.DataField',
-            Label : 'Title',
-            Value : Title,
-        },
-        {
-            $Type : 'UI.DataField',
-            Label : 'Description',
-            Value : Description,
-        },
-    ],
+    {
+        $Type : 'UI.DataField',
+        Label : 'Title',
+        Value : Title
+    },
+    {
+        $Type : 'UI.DataField',
+        Label : 'Description',
+        Value : Description
+    }
+],
+
+UI.FieldGroup #GeneralInformation : {
+    $Type : 'UI.FieldGroupType',
+    Data : [
+        { $Type : 'UI.DataField', Label : 'Request Number', Value : RequestNumber },
+        { $Type : 'UI.DataField', Label : 'Title', Value : Title },
+        { $Type : 'UI.DataField', Label : 'Description', Value : Description }
+    ]
+},
+
+UI.FieldGroup #RequestDetails : {
+    $Type : 'UI.FieldGroupType',
+    Data : [
+        { $Type : 'UI.DataField', Label : 'Status', Value : Status.Name },
+        { $Type : 'UI.DataField', Label : 'Priority', Value : Priority.Name },
+        { $Type : 'UI.DataField', Label : 'Request Type', Value : RequestType.Name }
+    ]
+},
+
+UI.FieldGroup #EmployeeInformation : {
+    $Type : 'UI.FieldGroupType',
+    Data : [
+        { $Type : 'UI.DataField', Label : 'Employee Code', Value : Employee.EmployeeCode },
+        { $Type : 'UI.DataField', Label : 'First Name', Value : Employee.FirstName },
+        { $Type : 'UI.DataField', Label : 'Last Name', Value : Employee.LastName },
+        { $Type : 'UI.DataField', Label : 'Email', Value : Employee.Email },
+        { $Type : 'UI.DataField', Label : 'Department', Value : Employee.Department.Name }
+    ]
+},
+
+UI.FieldGroup #ManagerInformation : {
+    $Type : 'UI.FieldGroupType',
+    Data : [
+        { $Type : 'UI.DataField', Label : 'Manager Code', Value : Employee.Manager.EmployeeCode },
+        { $Type : 'UI.DataField', Label : 'Manager First Name', Value : Employee.Manager.FirstName },
+        { $Type : 'UI.DataField', Label : 'Manager Last Name', Value : Employee.Manager.LastName },
+        { $Type : 'UI.DataField', Label : 'Manager Email', Value : Employee.Manager.Email }
+    ]
+},
+
+UI.Identification : [
+    {
+        $Type : 'UI.DataFieldForAction',
+        Action : 'OperationsService.submitRequest',
+        Label : 'Submit Request'
+    }
+],
+
+UI.Facets : [
+    {
+        $Type : 'UI.ReferenceFacet',
+        ID : 'GeneralInformation',
+        Label : 'Request Information',
+        Target : '@UI.FieldGroup#GeneralInformation'
+    },
+    {
+        $Type : 'UI.ReferenceFacet',
+        ID : 'RequestDetails',
+        Label : 'Request Details',
+        Target : '@UI.FieldGroup#RequestDetails'
+    },
+    {
+        $Type : 'UI.ReferenceFacet',
+        ID : 'EmployeeInformation',
+        Label : 'Employee Information',
+        Target : '@UI.FieldGroup#EmployeeInformation'
+    },
+    {
+        $Type : 'UI.ReferenceFacet',
+        ID : 'ManagerInformation',
+        Label : 'Manager Information',
+        Target : '@UI.FieldGroup#ManagerInformation'
+    }
+],
+
+UI.CreateHidden : false
+
+
 );
-
-annotate service.Requests with {
-    Employee @Common.ValueList : {
-        $Type : 'Common.ValueListType',
-        CollectionPath : 'Employees',
-        Parameters : [
-            {
-                $Type : 'Common.ValueListParameterInOut',
-                LocalDataProperty : Employee_ID,
-                ValueListProperty : 'ID',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'EmployeeCode',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'FirstName',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'LastName',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Email',
-            },
-        ],
-    }
-};
-
-annotate service.Requests with {
-    RequestType @Common.ValueList : {
-        $Type : 'Common.ValueListType',
-        CollectionPath : 'RequestTypes',
-        Parameters : [
-            {
-                $Type : 'Common.ValueListParameterInOut',
-                LocalDataProperty : RequestType_ID,
-                ValueListProperty : 'ID',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Code',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Name',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Description',
-            },
-        ],
-    }
-};
-
-annotate service.Requests with {
-    Status @Common.ValueList : {
-        $Type : 'Common.ValueListType',
-        CollectionPath : 'RequestStatuses',
-        Parameters : [
-            {
-                $Type : 'Common.ValueListParameterInOut',
-                LocalDataProperty : Status_ID,
-                ValueListProperty : 'ID',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Code',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Name',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Description',
-            },
-        ],
-    }
-};
-
-annotate service.Requests with {
-    Priority @Common.ValueList : {
-        $Type : 'Common.ValueListType',
-        CollectionPath : 'Priorities',
-        Parameters : [
-            {
-                $Type : 'Common.ValueListParameterInOut',
-                LocalDataProperty : Priority_ID,
-                ValueListProperty : 'ID',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Code',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Name',
-            },
-            {
-                $Type : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty : 'Description',
-            },
-        ],
-    }
-};
-
