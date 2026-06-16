@@ -118,11 +118,9 @@ this.after('UPDATE', 'Requests', async (data) => {
 // =====================================================
 // SUBMIT REQUEST
 // =====================================================
-this.on('submitRequest', async (req) => {
+this.on('submitRequest', 'Requests', async (req) => {
 
-    // Authorization disabled temporarily for local development
-
-    const requestId = req.data.requestID;
+    const requestId = req.params[0].ID;
 
     const requestData = await SELECT.one
         .from(Requests)
