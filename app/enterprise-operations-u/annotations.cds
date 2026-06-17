@@ -181,7 +181,7 @@ annotate service.Approvals with @(
 
         {
             $Type : 'UI.DataFieldForAction',
-            Action : 'OperationsService.rejectApproval',
+            Action : 'OperationsService.reject',
             Label : 'Reject'
         }
 

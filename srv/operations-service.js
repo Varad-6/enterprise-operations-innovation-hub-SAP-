@@ -16,7 +16,6 @@ const {
 // =====================================================
 this.before('CREATE', 'Requests', async (req) => {
 
-    // Set default status to DRAFT
     const draftStatus = await SELECT.one
         .from(RequestStatuses)
         .where({ Code: 'DRAFT' });
@@ -25,48 +24,43 @@ this.before('CREATE', 'Requests', async (req) => {
         req.data.Status_ID = draftStatus.ID;
     }
 
-    // Set default priority to MEDIUM if not provided
     const defaultPriority = await SELECT.one
         .from('enterprise.operations.Priority')
         .where({ Code: 'MEDIUM' });
 
-    if (!req.data.Priority_ID && defaultPriority) {
-        req.data.Priority_ID = defaultPriority.ID;
-    }
+   if (!req.data.Priority_ID && defaultPriority) {
+    req.data.Priority_ID = defaultPriority.ID;
+}
 
-    // Set default request type to LAPTOP if not provided
-    const defaultRequestType = await SELECT.one
-        .from('enterprise.operations.RequestType')
-        .where({ Code: 'LAPTOP' });
+const defaultRequestType = await SELECT.one
+    .from('enterprise.operations.RequestType')
+    .where({ Code: 'LAPTOP' });
 
-    if (!req.data.RequestType_ID && defaultRequestType) {
-        req.data.RequestType_ID = defaultRequestType.ID;
-    }
+if (!req.data.RequestType_ID && defaultRequestType) {
+    req.data.RequestType_ID = defaultRequestType.ID;
+}
 
-    // Validate mandatory fields
     if (!req.data.Title || req.data.Title.trim() === '') {
         return req.error(400, 'Title is mandatory');
     }
 
-    if (!req.data.Description || req.data.Description.trim() === '') {
-        return req.error(400, 'Description is mandatory');
-    }
+   if (!req.data.Description || req.data.Description.trim() === '') {
+    return req.error(400, 'Description is mandatory');
+}
 
-    if (!req.data.Employee_ID) {
-        return req.error(400, 'Employee is mandatory');
-    }
+if (!req.data.Employee_ID) {
+    return req.error(400, 'Employee is mandatory');
+}
 
-    // Validate employee exists
-    const employee = await SELECT.one
-        .from(Employees)
-        .where({ ID: req.data.Employee_ID });
+const employee = await SELECT.one
+    .from(Employees)
+    .where({ ID: req.data.Employee_ID });
 
-    if (!employee) {
-        return req.error(400, 'Invalid Employee');
-    }
+if (!employee) {
+    return req.error(400, 'Invalid Employee');
+}
 
-    // Generate unique RequestNumber
-    const year = new Date().getFullYear();
+const year = new Date().getFullYear();
     const requestCount = await SELECT.from(Requests);
 
     req.data.RequestNumber =
@@ -133,12 +127,45 @@ this.after('UPDATE', 'Requests', async (data) => {
 });
 
 // =====================================================
-// CREATE REQUEST (REMOVED - relies on CAP lifecycle)
+// CREATE REQUEST
 // =====================================================
-// createRequest action now leverages the standard CAP lifecycle:
-// - before CREATE handler: generates RequestNumber
-// - after CREATE handler: creates Approval record
-// This ensures proper data consistency and flow.
+this.on('createRequest', async (req) => {
+
+    const year = new Date().getFullYear();
+
+const requestCount = await SELECT.from(Requests);
+
+const requestNumber =
+    `REQ-${year}-${String(requestCount.length + 1).padStart(4, '0')}`;
+
+    return await this.run(
+    INSERT.into(Requests).entries({
+        ID: cds.utils.uuid(),
+        Title: req.data.title,
+        Description: req.data.description,
+        Employee_ID: req.data.employeeID,
+        Priority_ID: req.data.priorityID,
+        RequestType_ID: req.data.requestTypeID
+    })
+);
+    const employee = await SELECT.one
+    .from(Employees)
+    .where({ ID: req.data.employeeID });
+
+const pendingDecision = await SELECT.one
+    .from(ApprovalDecisions)
+    .where({ Code: 'PENDING' });
+
+await INSERT.into(Approvals).entries({
+    ID: cds.utils.uuid(),
+    Request_ID: newRequestId,
+    Approver_ID: employee.Manager_ID,
+    Decision_ID: pendingDecision.ID
+});
+
+    return 'Request Created';
+
+});
 
 // =====================================================
 // SUBMIT REQUEST
@@ -183,7 +210,7 @@ this.on('submitRequest', 'Requests', async (req) => {
 // =====================================================
 this.on('approve', 'Approvals', async (req) => {
 
-    const approvalID = req.params[0].ID;
+    const approvalID = req.params[1].ID;
 
     const approval = await SELECT.one
         .from(Approvals)
@@ -197,17 +224,9 @@ this.on('approve', 'Approvals', async (req) => {
         .from(ApprovalDecisions)
         .where({ Code: 'APPROVED' });
 
-    if (!approvedDecision) {
-        return req.error(400, 'APPROVED decision not configured');
-    }
-
     const approvedStatus = await SELECT.one
         .from(RequestStatuses)
         .where({ Code: 'APPROVED' });
-
-    if (!approvedStatus) {
-        return req.error(400, 'APPROVED status not configured');
-    }
 
     await UPDATE(Approvals)
         .set({
@@ -227,7 +246,6 @@ this.on('approve', 'Approvals', async (req) => {
             ID: approval.Request_ID
         });
 
-    console.log(`Approval ${approvalID} approved successfully`);
     return 'Approved Successfully';
 });
 
@@ -236,7 +254,7 @@ this.on('approve', 'Approvals', async (req) => {
 // =====================================================
 this.on('rejectApproval', 'Approvals', async (req) => {
 
-    const approvalID = req.params[0].ID;
+    const approvalID = req.params[1].ID;
 
     const approval = await SELECT.one
         .from(Approvals)
@@ -250,17 +268,9 @@ this.on('rejectApproval', 'Approvals', async (req) => {
         .from(ApprovalDecisions)
         .where({ Code: 'REJECTED' });
 
-    if (!rejectedDecision) {
-        return req.error(400, 'REJECTED decision not configured');
-    }
-
     const rejectedStatus = await SELECT.one
         .from(RequestStatuses)
         .where({ Code: 'REJECTED' });
-
-    if (!rejectedStatus) {
-        return req.error(400, 'REJECTED status not configured');
-    }
 
     await UPDATE(Approvals)
         .set({
@@ -280,7 +290,6 @@ this.on('rejectApproval', 'Approvals', async (req) => {
             ID: approval.Request_ID
         });
 
-    console.log(`Approval ${approvalID} rejected successfully`);
     return 'Rejected Successfully';
 });
 
