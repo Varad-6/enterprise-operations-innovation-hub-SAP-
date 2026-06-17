@@ -44,12 +44,23 @@ if (!req.data.RequestType_ID && defaultRequestType) {
         return req.error(400, 'Title is mandatory');
     }
 
-    if (!req.data.Description || req.data.Description.trim() === '') {
-        return req.error(400, 'Description is mandatory');
-    }
+   if (!req.data.Description || req.data.Description.trim() === '') {
+    return req.error(400, 'Description is mandatory');
+}
 
-    const year = new Date().getFullYear();
+if (!req.data.Employee_ID) {
+    return req.error(400, 'Employee is mandatory');
+}
 
+const employee = await SELECT.one
+    .from(Employees)
+    .where({ ID: req.data.Employee_ID });
+
+if (!employee) {
+    return req.error(400, 'Invalid Employee');
+}
+
+const year = new Date().getFullYear();
     const requestCount = await SELECT.from(Requests);
 
     req.data.RequestNumber =
@@ -116,6 +127,47 @@ this.after('UPDATE', 'Requests', async (data) => {
 });
 
 // =====================================================
+// CREATE REQUEST
+// =====================================================
+this.on('createRequest', async (req) => {
+
+    const year = new Date().getFullYear();
+
+const requestCount = await SELECT.from(Requests);
+
+const requestNumber =
+    `REQ-${year}-${String(requestCount.length + 1).padStart(4, '0')}`;
+
+    return await this.run(
+    INSERT.into(Requests).entries({
+        ID: cds.utils.uuid(),
+        Title: req.data.title,
+        Description: req.data.description,
+        Employee_ID: req.data.employeeID,
+        Priority_ID: req.data.priorityID,
+        RequestType_ID: req.data.requestTypeID
+    })
+);
+    const employee = await SELECT.one
+    .from(Employees)
+    .where({ ID: req.data.employeeID });
+
+const pendingDecision = await SELECT.one
+    .from(ApprovalDecisions)
+    .where({ Code: 'PENDING' });
+
+await INSERT.into(Approvals).entries({
+    ID: cds.utils.uuid(),
+    Request_ID: newRequestId,
+    Approver_ID: employee.Manager_ID,
+    Decision_ID: pendingDecision.ID
+});
+
+    return 'Request Created';
+
+});
+
+// =====================================================
 // SUBMIT REQUEST
 // =====================================================
 this.on('submitRequest', 'Requests', async (req) => {
@@ -156,24 +208,37 @@ this.on('submitRequest', 'Requests', async (req) => {
 // =====================================================
 // APPROVE REQUEST
 // =====================================================
-this.on('approveRequest', async (req) => {
+// =====================================================
+// APPROVE
+// =====================================================
+this.on('approve', 'Approvals', async (req) => {
 
-    const approvedStatus = await SELECT.one
-        .from(RequestStatuses)
-        .where({ Code: 'APPROVED' });
+    const approvalID = req.params[1].ID;
+
+    const approval = await SELECT.one
+        .from(Approvals)
+        .where({ ID: approvalID });
+
+    if (!approval) {
+        return req.error(404, 'Approval not found');
+    }
 
     const approvedDecision = await SELECT.one
         .from(ApprovalDecisions)
         .where({ Code: 'APPROVED' });
 
+    const approvedStatus = await SELECT.one
+        .from(RequestStatuses)
+        .where({ Code: 'APPROVED' });
+
     await UPDATE(Approvals)
         .set({
             Decision_ID: approvedDecision.ID,
-            Comments: req.data.comments,
-            ApprovedAt: new Date()
+            ApprovedAt: new Date(),
+            Comments: 'Approved'
         })
         .where({
-            Request_ID: req.data.requestID
+            ID: approvalID
         });
 
     await UPDATE(Requests)
@@ -181,34 +246,42 @@ this.on('approveRequest', async (req) => {
             Status_ID: approvedStatus.ID
         })
         .where({
-            ID: req.data.requestID
+            ID: approval.Request_ID
         });
 
-    return 'Request Approved';
-
+    return 'Approved Successfully';
 });
-
 // =====================================================
 // REJECT REQUEST
 // =====================================================
-this.on('rejectRequest', async (req) => {
+this.on('rejectApproval', 'Approvals', async (req) => {
 
-    const rejectedStatus = await SELECT.one
-        .from(RequestStatuses)
-        .where({ Code: 'REJECTED' });
+    const approvalID = req.params[1].ID;
+
+    const approval = await SELECT.one
+        .from(Approvals)
+        .where({ ID: approvalID });
+
+    if (!approval) {
+        return req.error(404, 'Approval not found');
+    }
 
     const rejectedDecision = await SELECT.one
         .from(ApprovalDecisions)
         .where({ Code: 'REJECTED' });
 
+    const rejectedStatus = await SELECT.one
+        .from(RequestStatuses)
+        .where({ Code: 'REJECTED' });
+
     await UPDATE(Approvals)
         .set({
             Decision_ID: rejectedDecision.ID,
-            Comments: req.data.comments,
-            ApprovedAt: new Date()
+            ApprovedAt: new Date(),
+            Comments: 'Rejected'
         })
         .where({
-            Request_ID: req.data.requestID
+            ID: approvalID
         });
 
     await UPDATE(Requests)
@@ -216,12 +289,12 @@ this.on('rejectRequest', async (req) => {
             Status_ID: rejectedStatus.ID
         })
         .where({
-            ID: req.data.requestID
+            ID: approval.Request_ID
         });
 
-    return 'Request Rejected';
-
+    return 'Rejected Successfully';
 });
+
 
 // =====================================================
 // DASHBOARD STATS
