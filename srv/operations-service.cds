@@ -21,11 +21,19 @@ service OperationsService {
 
     entity ApprovalDecisions as projection on db.ApprovalDecision;
 
-    entity Requests as projection on db.Request actions {
+   entity Requests as projection on db.Request actions {
 
-        action submitRequest() returns String;
+    action createRequest(
+        title         : String,
+        description   : String,
+        employeeID    : UUID,
+        priorityID    : UUID,
+        requestTypeID : UUID
+    ) returns String;
 
-    };
+    action submitRequest() returns String;
+
+};
 
 entity Approvals as projection on db.Approval actions {
 

@@ -132,10 +132,12 @@
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
-                    "type": "ResponsiveTable",
-                    "creationMode": {
-                      "name": "NewPage"
-                    }
+  "type": "ResponsiveTable",
+  "selectionMode": "None",
+  "creationMode": {
+    "name": "Inline"
+  }
+
                   }
                 }
               }
